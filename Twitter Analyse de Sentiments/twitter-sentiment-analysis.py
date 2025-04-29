@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[22]:
+# In[ ]:
 
 
 # This Python 3 environment comes with many helpful analytics libraries installed
@@ -23,7 +23,7 @@ for dirname, _, filenames in os.walk('tweet-sentiment-extraction'):
 # You can also write temporary files to /kaggle/temp/, but they won't be saved outside of the current session
 
 
-# In[23]:
+# In[ ]:
 
 
 import numpy as np
@@ -37,7 +37,7 @@ import seaborn as sns
 import os
 
 
-# In[24]:
+# In[ ]:
 
 
 sns.set_palette('pastel')
@@ -49,23 +49,23 @@ sns.set_style('darkgrid')
 
 # Our objective is to calssify sentiments of various tweet
 
-# In[25]:
+# In[ ]:
 
 
-train_df=pd.read_csv('train.csv')
+train_df=pd.read_csv('tweet-sentiment-extraction/train.csv')
 
 train_df
 
 
-# In[26]:
+# In[ ]:
 
 
-test_df=pd.read_csv('test.csv')
+test_df=pd.read_csv('tweet-sentiment-extraction/test.csv')
 
 test_df
 
 
-# In[27]:
+# In[ ]:
 
 
 print(f'Shape of training data:{train_df.shape}')
@@ -78,13 +78,13 @@ print(f'Shape of test data:{test_df.shape}')
 # 
 # 
 
-# In[28]:
+# In[ ]:
 
 
 train_df.info()
 
 
-# In[29]:
+# In[ ]:
 
 
 #Removing the null column
@@ -92,13 +92,13 @@ train_df.info()
 train_df=train_df.dropna(how='any',axis=0)
 
 
-# In[30]:
+# In[ ]:
 
 
 train_df.shape
 
 
-# In[31]:
+# In[ ]:
 
 
 sns.countplot(train_df,x='sentiment')
@@ -114,7 +114,7 @@ sns.countplot(train_df,x='sentiment')
 
 # # **Preprocessing Input**
 
-# In[32]:
+# In[ ]:
 
 
 train_df['text'].head(5)
@@ -127,7 +127,7 @@ train_df['text'].head(5)
 # 
 # 
 
-# In[33]:
+# In[ ]:
 
 
 #Analyzing texts
@@ -137,7 +137,7 @@ for i in np.arange(1,20):
   print(train_df['text'][i])
 
 
-# In[34]:
+# In[ ]:
 
 
 import string
@@ -147,13 +147,13 @@ import re
 
 # **Websites** beginning with https/www or **email** rarely convey meaning information, we will remove this with  regular expression
 
-# In[35]:
+# In[ ]:
 
 
 pattern_web =  r"(([\w]+:)?//)?(([\d\w]|%[a-fA-F\d]{2,2})+(:([\d\w]|%[a-fA-f\d]{2,2})+)?@)?([\d\w][-\d\w]{0,253}[\d\w]\.)+[\w]{2,4}(:[\d]+)?(/([-+_~.\d\w]|%[a-fA-f\d]{2,2})*)*(\?(&?([-+_~.\d\w]|%[a-fA-f\d]{2,2})=?)*)?(#([-+_~.\d\w]|%[a-fA-f\d]{2,2})*)?"
 
 
-# In[36]:
+# In[ ]:
 
 
 str='''Im going to http://www.example.com google.com https://example.co.uk'''
@@ -161,13 +161,13 @@ str='''Im going to http://www.example.com google.com https://example.co.uk'''
 re.sub(pattern_web,'',str)
 
 
-# In[37]:
+# In[ ]:
 
 
 pattern_email=r"(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*)@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])"
 
 
-# In[38]:
+# In[ ]:
 
 
 str='''Send mail to user@example.com person-1992@fg.co.in manu@epl.co.uk'''
@@ -181,13 +181,13 @@ re.sub(pattern_email,' ',str)
 # 
 # Handles should be removed as they are used to refer to someone
 
-# In[39]:
+# In[ ]:
 
 
 pattern_hash=r'#(\w+)'
 
 
-# In[40]:
+# In[ ]:
 
 
 str=''' I'm cool  #Summer2024 but my phone# # 444 Feat#UK '''
@@ -195,13 +195,13 @@ str=''' I'm cool  #Summer2024 but my phone# # 444 Feat#UK '''
 re.sub(pattern_hash," \\1",str)  #Keeps the part of expression removing hashtags only
 
 
-# In[41]:
+# In[ ]:
 
 
 pattern_handle=r'@\w+'  # Only matched if @ followed by alphanumeric characters & underscore
 
 
-# In[42]:
+# In[ ]:
 
 
 str=''' @Mike Is ur email gg@hj.com '''
@@ -211,19 +211,19 @@ re.sub(pattern_handle," ",str)
 
 # Twitter also contains **emojis** which can convey important informations, we will use emoji package to convert those into expressions
 
-# In[43]:
+# In[ ]:
 
 
 get_ipython().system('pip install emoji')
 
 
-# In[44]:
+# In[ ]:
 
 
 import emoji
 
 
-# In[45]:
+# In[ ]:
 
 
 str='I love python 😊 '
@@ -233,25 +233,25 @@ emoji.demojize(str)
 
 # Many tweets use **contractions** of full words and these must be expanded to reveal their meaning
 
-# In[46]:
+# In[ ]:
 
 
 get_ipython().system('pip install contractions')
 
 
-# In[47]:
+# In[ ]:
 
 
 import contractions
 
 
-# In[48]:
+# In[ ]:
 
 
 contractions.safety_keys
 
 
-# In[49]:
+# In[ ]:
 
 
 str="I'd have responded, if I were going"
@@ -263,14 +263,14 @@ contractions.fix(str)
 # 
 # For this , we will contract the repeated characters
 
-# In[50]:
+# In[ ]:
 
 
 pattern_repeat=r'([A-Za-z])\1{2,}'  # Usage of #1 implies that 1st character used has to match.{2,}-repeat more than 2 times
 
 
 
-# In[51]:
+# In[ ]:
 
 
 str=''' U r so greaat,lets be friendssss cool '''
@@ -291,28 +291,29 @@ re.sub(pattern_repeat,r'\1',str)
 # 3.**Punctuation**: Mostly used ungramatically, and since we have already taken care of contractions,handles and hashtags,their retention will be confusing.**Remaining punctuations should be removed**
 # 
 
-# In[52]:
+# In[ ]:
 
 
 string.punctuation
 
 
-# In[53]:
+# In[ ]:
 
 
 pattern_num=r'[0-9]'
 
 
-# In[54]:
+# In[ ]:
 
 
 re.sub(pattern_num," ","i've 4 $ %")
 
 
-# In[55]:
+# In[ ]:
 
 
 #Defing a function to apply all pre-processing steps
+
 
 
 def pre_process(tweet):
@@ -360,13 +361,13 @@ def pre_process(tweet):
   return t_mod
 
 
-# In[56]:
+# In[ ]:
 
 
 train_df['cleaned_text']=train_df['text'].apply(pre_process)
 
 
-# In[57]:
+# In[ ]:
 
 
 train_df
@@ -374,31 +375,31 @@ train_df
 
 # # Tokenizing
 
-# In[58]:
+# In[ ]:
 
 
 from nltk.tokenize import TreebankWordTokenizer
 
 
-# In[59]:
+# In[ ]:
 
 
 tokenizer=TreebankWordTokenizer()
 
 
-# In[60]:
+# In[ ]:
 
 
 train_df['tokens']=train_df['cleaned_text'].apply(lambda x:tokenizer.tokenize(x))
 
 
-# In[61]:
+# In[ ]:
 
 
 train_df
 
 
-# In[62]:
+# In[ ]:
 
 
 #Checking the length  of tokens
@@ -424,13 +425,13 @@ plt.show()
 
 # We can see that there is no notable difference in distribution of token length among sentiments, though'Neutral sentiment' seems to be of smaller length
 
-# In[63]:
+# In[ ]:
 
 
 from collections import Counter
 
 
-# In[64]:
+# In[ ]:
 
 
 ct=Counter()
@@ -440,13 +441,13 @@ for token_list in train_df['tokens']:
   ct.update(token_list)
 
 
-# In[65]:
+# In[ ]:
 
 
 sum(list(ct.values()))
 
 
-# In[66]:
+# In[ ]:
 
 
 #Most common words in tweets
@@ -454,7 +455,7 @@ sum(list(ct.values()))
 dict(ct.most_common(50))
 
 
-# In[67]:
+# In[ ]:
 
 
 #Distribution of 50 most common tokens
@@ -476,13 +477,13 @@ plt.show()
 # 
 # We will **filter out all the common words in english dict**
 
-# In[68]:
+# In[ ]:
 
 
 from nltk.corpus import stopwords
 
 
-# In[69]:
+# In[ ]:
 
 
 import nltk
@@ -490,19 +491,19 @@ import nltk
 nltk.download('stopwords')
 
 
-# In[70]:
+# In[ ]:
 
 
 stopword_list=stopwords.words('english')
 
 
-# In[71]:
+# In[ ]:
 
 
 train_df['tokens_wo_stopwords']=train_df['tokens'].apply(lambda x:[i for i in x if i not in stopword_list])
 
 
-# In[72]:
+# In[ ]:
 
 
 train_df
@@ -510,37 +511,37 @@ train_df
 
 # Using **lemmatization** for identifying the root words
 
-# In[73]:
+# In[ ]:
 
 
 from nltk.stem import WordNetLemmatizer
 
 
-# In[74]:
+# In[ ]:
 
 
 nltk.download('wordnet')
 
 
-# In[75]:
+# In[ ]:
 
 
 get_ipython().system('unzip /usr/share/nltk_data/corpora/wordnet.zip -d /usr/share/nltk_data/corpora/')
 
 
-# In[76]:
+# In[ ]:
 
 
 lemmatizer = WordNetLemmatizer()
 
 
-# In[77]:
+# In[ ]:
 
 
 lemmatizer.lemmatize('gives')
 
 
-# In[78]:
+# In[ ]:
 
 
 train_df['tokens_lemma']=train_df['tokens_wo_stopwords'].apply(lambda x:[lemmatizer.lemmatize(i) for i in x])
@@ -548,7 +549,7 @@ train_df['tokens_lemma']=train_df['tokens_wo_stopwords'].apply(lambda x:[lemmati
 train_df['tokens_lemma']
 
 
-# In[79]:
+# In[ ]:
 
 
 #Counters for listing tokens
@@ -588,13 +589,13 @@ for token_list in train_df[train_df['sentiment']=='negative']['tokens_lemma']:
   ct_negative.update(token_list)
 
 
-# In[80]:
+# In[ ]:
 
 
 dict(ct_all.most_common(50)).values()
 
 
-# In[81]:
+# In[ ]:
 
 
 #Distribution of 50 most common tokens
@@ -612,7 +613,7 @@ plt.tight_layout()
 plt.show()
 
 
-# In[82]:
+# In[ ]:
 
 
 #Distribution of 50 most common positive tokens
@@ -630,7 +631,7 @@ plt.tight_layout()
 plt.show()
 
 
-# In[83]:
+# In[ ]:
 
 
 #Distribution of 50 most common negative tokens
@@ -648,19 +649,19 @@ plt.tight_layout()
 plt.show()
 
 
-# In[84]:
+# In[ ]:
 
 
 get_ipython().system('pip install wordcloud')
 
 
-# In[85]:
+# In[ ]:
 
 
 from wordcloud import WordCloud
 
 
-# In[86]:
+# In[ ]:
 
 
 def generate_wordcloud(list_,label_list):
@@ -690,7 +691,7 @@ def generate_wordcloud(list_,label_list):
     k+=1
 
 
-# In[87]:
+# In[ ]:
 
 
 generate_wordcloud([ct_all,ct_positive,ct_negative,ct_neutral],['All','Positive','Negative','Neutral'])
@@ -706,7 +707,7 @@ generate_wordcloud([ct_all,ct_positive,ct_negative,ct_neutral],['All','Positive'
 # 
 # Further we will use the original token list without removing stopwords or lemmatozation,for maximum representation of our data
 
-# In[88]:
+# In[ ]:
 
 
 #Getting the final data
@@ -716,7 +717,7 @@ train_df_chosen=train_df[['tokens','sentiment']]
 train_df_chosen
 
 
-# In[89]:
+# In[ ]:
 
 
 #Converting target class to on-hot vector
@@ -730,7 +731,7 @@ train_df_final['sentence']=train_df_final['tokens'].apply(lambda x:" ".join(x)) 
 train_df_final
 
 
-# In[90]:
+# In[ ]:
 
 
 #Checking the length of sentence
@@ -738,14 +739,14 @@ train_df_final['sentence_length']=train_df_final['sentence'].apply(lambda x:len(
 train_df_final['sentence_length'].value_counts().sort_index().plot.bar()
 
 
-# In[91]:
+# In[ ]:
 
 
 #Dropping the occurences of null length
 train_df_final=train_df_final.drop(train_df_final[train_df_final['sentence_length']==0].index,axis=0)
 
 
-# In[92]:
+# In[ ]:
 
 
 #Getting the test dataset
@@ -753,20 +754,20 @@ train_df_final=train_df_final.drop(train_df_final[train_df_final['sentence_lengt
 test_df
 
 
-# In[93]:
+# In[ ]:
 
 
 test_df.info()
 
 
-# In[94]:
+# In[ ]:
 
 
 #Dropping the null rows
 test_df=test_df.dropna(how='any',axis=0)
 
 
-# In[95]:
+# In[ ]:
 
 
 #Pre-processing and tokenizing
@@ -777,7 +778,7 @@ test_df['cleaned_text']=test_df['text'].apply(pre_process)        #Applying pre-
 test_df['tokens']=test_df['cleaned_text'].apply(lambda x:tokenizer.tokenize(x))   #Applying tokenizer
 
 
-# In[96]:
+# In[ ]:
 
 
 test_df_chosen=test_df[['tokens','sentiment']]
@@ -791,7 +792,7 @@ test_df_final['sentence']=test_df_final['tokens'].apply(lambda x:" ".join(x))
 test_df_final
 
 
-# In[97]:
+# In[ ]:
 
 
 #Checking the length of sentence
@@ -799,14 +800,14 @@ test_df_final['sentence_length']=test_df_final['sentence'].apply(lambda x:len(x.
 test_df_final['sentence_length'].value_counts().sort_index().plot.bar()
 
 
-# In[98]:
+# In[ ]:
 
 
 #Dropping the occurences of null length
 test_df_final=test_df_final.drop(test_df_final[test_df_final['sentence_length']==0].index,axis=0)
 
 
-# In[99]:
+# In[ ]:
 
 
 train_df_features=train_df_final['sentence']
@@ -820,7 +821,7 @@ test_df_features=test_df_final['sentence']
 test_df_targets=test_df_final[['sentiment_negative','sentiment_neutral','sentiment_positive']]
 
 
-# In[100]:
+# In[ ]:
 
 
 #Splitting into train and validation sets
@@ -830,7 +831,7 @@ from sklearn.model_selection import train_test_split
 X_train, X_val, y_train, y_val=train_test_split(train_df_features,train_df_targets,random_state=42,shuffle=True,test_size=0.2)
 
 
-# In[101]:
+# In[ ]:
 
 
 X_test=test_df_features
@@ -838,7 +839,7 @@ X_test=test_df_features
 y_test=test_df_targets
 
 
-# In[102]:
+# In[ ]:
 
 
 #Checking shape of our dataset
@@ -858,7 +859,7 @@ print(f"Shape of Y test:{y_test.shape}")
 
 # # Vectorizing
 
-# In[103]:
+# In[ ]:
 
 
 import tensorflow as tf
